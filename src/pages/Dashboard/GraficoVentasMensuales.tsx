@@ -1,38 +1,94 @@
-import { useEffect, useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import api from "../../api/api";
-import { message } from "antd";
+import { useCallback } from "react";
+import { ResponsiveLine } from "@nivo/line";
+import dayjs from "dayjs";
+import { Empty, Spin } from "antd";
+import { getVentasPorFechaReporte } from "../../api/reportsApi";
+import { useReportLoader } from "../../hooks/useReportLoader";
+import type { VentaPorFechaReporteItem } from "../../interfaces/reportes";
+import { parseDate } from "../../utils/dateUtils";
+import { chartPalette, nivoTheme } from "../../utils/chartTheme";
 
-interface VentaMes {
-  mes: string;
-  total: number;
+interface SerieVentaMensual {
+  id: string;
+  data: Array<{ x: string; y: number }>;
 }
 
 export default function GraficoVentasMensuales() {
-  const [data, setData] = useState<VentaMes[]>([]);
-
-  useEffect(() => {
-    const cargar = async () => {
-      try {
-        const res = await api.get("/Ventas/resumen");
-        const ventasMes = res.data?.ResumenMensual || [];
-        setData(ventasMes);
-      } catch {
-        message.error("Error al cargar las ventas mensuales");
-      }
-    };
-    cargar();
+  const fetchVentas = useCallback(async () => {
+    const inicio = dayjs().startOf("year").format("YYYY-MM-DD");
+    const fin = dayjs().endOf("year").format("YYYY-MM-DD");
+    const res = await getVentasPorFechaReporte(inicio, fin);
+    return res.data;
   }, []);
 
+  const { data: ventas, loading } = useReportLoader<VentaPorFechaReporteItem>(fetchVentas);
+
+  const agrupado = ventas.reduce<Record<string, number>>((acc, venta) => {
+    const fecha = parseDate(venta.fecha);
+    if (!fecha) {
+      return acc;
+    }
+
+    const mes = fecha.format("MMM");
+    acc[mes] = (acc[mes] ?? 0) + venta.total;
+    return acc;
+  }, {});
+
+  const data: SerieVentaMensual[] = [
+    {
+      id: "Ventas",
+      data: Object.entries(agrupado).map(([mes, total]) => ({
+        x: mes,
+        y: total,
+      })),
+    },
+  ];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center" style={{ height: 320 }}>
+        <Spin />
+      </div>
+    );
+  }
+
+  if (data[0].data.length === 0) {
+    return (
+      <div className="flex items-center justify-center" style={{ height: 320 }}>
+        <Empty description="Sin datos para graficar" />
+      </div>
+    );
+  }
+
   return (
-    <ResponsiveContainer width="100%" height={260}>
-      <BarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="mes" />
-        <YAxis />
-        <Tooltip />
-        <Bar dataKey="total" name="Ventas (C$)" fill="#facc15" />
-      </BarChart>
-    </ResponsiveContainer>
+    <div style={{ height: 320 }}>
+      <ResponsiveLine
+        data={data}
+        margin={{ top: 20, right: 20, bottom: 50, left: 60 }}
+        theme={nivoTheme}
+        xScale={{ type: "point" }}
+        yScale={{ type: "linear", stacked: false }}
+        colors={[chartPalette.primary]}
+        pointSize={8}
+        pointColor="#ffffff"
+        pointBorderWidth={3}
+        pointBorderColor={chartPalette.primary}
+        lineWidth={4}
+        enableArea
+        areaOpacity={0.12}
+        enableGridX={false}
+        curve="monotoneX"
+        axisBottom={{
+          tickSize: 0,
+          tickPadding: 12,
+        }}
+        axisLeft={{
+          tickSize: 0,
+          tickPadding: 10,
+          format: (value) => `C$ ${value}`,
+        }}
+        useMesh
+      />
+    </div>
   );
 }

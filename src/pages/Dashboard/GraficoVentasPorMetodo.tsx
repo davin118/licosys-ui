@@ -1,48 +1,63 @@
-import { useEffect, useState } from "react";
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import api from "../../api/api";
-import { message } from "antd";
+import { useCallback } from "react";
+import { ResponsivePie } from "@nivo/pie";
+import { Empty, Spin } from "antd";
+import { getVentasPorMetodoReporte } from "../../api/reportsApi";
+import { useReportLoader } from "../../hooks/useReportLoader";
+import type { VentaPorMetodoReporteItem } from "../../interfaces/reportes";
+import { categoricalBluePalette, nivoTheme } from "../../utils/chartTheme";
 
-interface MetodoVenta {
-  metodo: string;
-  total: number;
+interface MetodoPieData {
+  id: string;
+  label: string;
+  value: number;
 }
 
-const COLORS = ["#22c55e", "#3b82f6", "#eab308", "#ef4444", "#a855f7"];
-
 export default function GraficoVentasPorMetodo() {
-  const [data, setData] = useState<MetodoVenta[]>([]);
-
-  useEffect(() => {
-    const cargar = async () => {
-      try {
-        const res = await api.get("/Ventas/resumen");
-        setData(res.data?.VentasPorMetodo || []);
-      } catch {
-        message.error("Error al cargar ventas por método de pago");
-      }
-    };
-    cargar();
+  const fetchVentasPorMetodo = useCallback(async () => {
+    const res = await getVentasPorMetodoReporte();
+    return res.data;
   }, []);
 
+  const { data: metodos, loading } = useReportLoader<VentaPorMetodoReporteItem>(fetchVentasPorMetodo);
+
+  const data: MetodoPieData[] = metodos.map((item) => ({
+    id: item.metodoPago,
+    label: item.metodoPago,
+    value: item.totalVentas,
+  }));
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center" style={{ height: 300 }}>
+        <Spin />
+      </div>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <div className="flex items-center justify-center" style={{ height: 300 }}>
+        <Empty description="Sin datos para graficar" />
+      </div>
+    );
+  }
+
   return (
-    <ResponsiveContainer width="100%" height={260}>
-      <PieChart>
-        <Pie
-          data={data as any}
-          dataKey="total"
-          nameKey="metodo"
-          innerRadius={60}
-          outerRadius={100}
-          paddingAngle={5}
-        >
-          {data.map((_, index) => (
-            <Cell key={index} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Pie>
-        <Tooltip />
-        <Legend />
-      </PieChart>
-    </ResponsiveContainer>
+    <div style={{ height: 300 }}>
+      <ResponsivePie
+        data={data}
+        theme={nivoTheme}
+        innerRadius={0.6}
+        padAngle={1}
+        cornerRadius={6}
+        activeOuterRadiusOffset={10}
+        colors={categoricalBluePalette}
+        borderWidth={2}
+        borderColor="#f8fbff"
+        arcLinkLabelsColor="#64748b"
+        arcLinkLabelsThickness={1.5}
+        arcLabelsTextColor="#eff6ff"
+      />
+    </div>
   );
 }

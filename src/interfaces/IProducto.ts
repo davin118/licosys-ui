@@ -4,7 +4,7 @@ export interface IProducto {
   precio: number;
   costo: number;
   stock: number;
-  fechaVencimiento: string;
+  fechaVencimiento?: string | null;
   categoriaId: number;
   proveedorId: number;
   categoria?: {

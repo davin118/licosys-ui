@@ -7,8 +7,14 @@ import {
     UserOutlined,
     AppstoreOutlined,
     ShopOutlined,
+    TagsOutlined,
+    TeamOutlined,
+    InboxOutlined,
     ShoppingCartOutlined,
     DollarOutlined,
+    DatabaseOutlined,
+    BarChartOutlined,
+    UsergroupAddOutlined,
 } from "@ant-design/icons";
 import { clearToken, getUserFromToken } from "../utils/auth";
 
@@ -19,7 +25,7 @@ export default function Navbar() {
     const location = useLocation();
     const user = getUserFromToken();
     const [notifications] = useState([
-        { id: 1, text: "Producto Paracetamol con bajo stock." },
+        { id: 1, text: "Producto Ron Anejo con bajo stock." },
         { id: 2, text: "Nueva venta registrada por María López." },
     ]);
 
@@ -28,12 +34,33 @@ export default function Navbar() {
         navigate("/login");
     };
 
-    const menuItems = [
-        { key: "/dashboard", icon: <AppstoreOutlined />, label: <Link to="/">Dashboard</Link> },
-        { key: "/productos", icon: <ShopOutlined />, label: <Link to="/productos">Productos</Link> },
-        { key: "/ventas", icon: <DollarOutlined />, label: <Link to="/ventas">Ventas</Link> },
-        { key: "/ventas-pos", icon: <ShoppingCartOutlined />, label: <Link to="/ventas-pos">Punto de Venta</Link> },
-    ];
+    const role = user?.role;
+    const canAccess = (roles?: string[]) => !roles || (!!role && roles.includes(role));
+
+    const menuItems = [{ key: "/", icon: <AppstoreOutlined />, label: <Link to="/">Dashboard</Link> }];
+
+    if (canAccess(["Administrador"])) {
+        menuItems.push({ key: "/productos", icon: <ShopOutlined />, label: <Link to="/productos">Productos</Link> });
+        menuItems.push({ key: "/categorias", icon: <TagsOutlined />, label: <Link to="/categorias">Categorias</Link> });
+        menuItems.push({ key: "/proveedores", icon: <TeamOutlined />, label: <Link to="/proveedores">Proveedores</Link> });
+        menuItems.push({ key: "/compras", icon: <InboxOutlined />, label: <Link to="/compras">Compras</Link> });
+        menuItems.push({ key: "/usuarios", icon: <UsergroupAddOutlined />, label: <Link to="/usuarios">Usuarios</Link> });
+        menuItems.push({ key: "/backup", icon: <DatabaseOutlined />, label: <Link to="/backup">Backups</Link> });
+    }
+
+    if (canAccess(["Administrador", "Vendedor"])) {
+        menuItems.push({ key: "/clientes", icon: <TeamOutlined />, label: <Link to="/clientes">Clientes</Link> });
+        menuItems.push({ key: "/ventas", icon: <DollarOutlined />, label: <Link to="/ventas">Ventas</Link> });
+        menuItems.push({ key: "/ventas-pos", icon: <ShoppingCartOutlined />, label: <Link to="/ventas-pos">Punto de Venta</Link> });
+    }
+
+    if (canAccess(["Administrador", "Consulta"])) {
+        menuItems.push({
+            key: "/reportes",
+            icon: <BarChartOutlined />,
+            label: <Link to="/reportes">Reportes</Link>,
+        });
+    }
 
     const userMenu = {
         items: [
@@ -70,7 +97,7 @@ export default function Navbar() {
         >
             {/* Logo */}
             <div className="flex items-center gap-2">
-                <span style={{ fontSize: 22 }}>💊</span>
+                <span style={{ fontSize: 22 }}>🍷</span>
                 <Link
                     to="/"
                     style={{
@@ -80,7 +107,7 @@ export default function Navbar() {
                         textDecoration: "none",
                     }}
                 >
-                    PharmaSys
+                    LicoSys
                 </Link>
             </div>
 

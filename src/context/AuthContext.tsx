@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import type { IUsuario } from "../interfaces/IUsuario";
+import { clearToken, saveAuthSession } from "../utils/auth";
 
 interface AuthContextType {
     user: IUsuario | null;
@@ -13,12 +14,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<IUsuario | null>(null);
 
     const login = (token: string, email: string) => {
-        localStorage.setItem("token", token);
-        setUser({ token, email });
+        saveAuthSession({ token, email });
+        setUser({
+            email,
+            rol: "",
+            activo: true,
+        });
     };
 
     const logout = () => {
-        localStorage.removeItem("token");
+        clearToken();
         setUser(null);
     };
 

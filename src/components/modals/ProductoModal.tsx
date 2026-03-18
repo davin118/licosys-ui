@@ -1,4 +1,5 @@
 import { Modal, Form, Input, InputNumber, DatePicker, Select } from "antd";
+import { useEffect } from "react";
 import type { IProducto } from "../../interfaces/IProducto";
 
 interface ProductoModalProps {
@@ -24,6 +25,15 @@ export default function ProductoModal({
 }: ProductoModalProps) {
     const [form] = Form.useForm();
 
+    useEffect(() => {
+        if (open) {
+            form.setFieldsValue(initialValues);
+            return;
+        }
+
+        form.resetFields();
+    }, [form, initialValues, open]);
+
     return (
         <Modal
             open={open}
@@ -45,7 +55,7 @@ export default function ProductoModal({
                             fontSize: 16,
                         }}
                     >
-                        💊
+                        🍷
                     </div>
                     <h3
                         style={{
@@ -70,7 +80,6 @@ export default function ProductoModal({
             <Form
                 form={form}
                 layout="vertical"
-                initialValues={initialValues}
                 onFinish={onOk}
                 style={{ marginTop: 8 }}
                 size="middle"
@@ -81,8 +90,26 @@ export default function ProductoModal({
                     name="nombre"
                     rules={[{ required: true, message: "Ingrese el nombre del producto" }]}
                 >
-                    <Input placeholder="Ej: Paracetamol 500mg" />
+                    <Input placeholder="Ej: Ron Anejo 750ml" />
                 </Form.Item>
+
+                <div className="grid grid-cols-2 gap-2">
+                    <Form.Item
+                        label={<span style={{ fontWeight: 600 }}>Marca</span>}
+                        name="marca"
+                        rules={[{ required: true, message: "Ingrese la marca" }]}
+                    >
+                        <Input placeholder="Ron, Vino, etc." />
+                    </Form.Item>
+
+                    <Form.Item
+                        label={<span style={{ fontWeight: 600 }}>Tipo</span>}
+                        name="tipo"
+                        rules={[{ required: true, message: "Ingrese el tipo del producto" }]}
+                    >
+                        <Input placeholder="Ej: Premium, Reserva" />
+                    </Form.Item>
+                </div>
 
                 <div className="grid grid-cols-2 gap-2">
                     <Form.Item
@@ -104,6 +131,24 @@ export default function ProductoModal({
 
                 <div className="grid grid-cols-2 gap-2">
                     <Form.Item
+                        label={<span style={{ fontWeight: 600 }}>Graduación (%)</span>}
+                        name="graduacionAlcoholica"
+                        rules={[{ required: true, message: "Ingrese la graduación" }]}
+                    >
+                        <InputNumber min={0} max={100} style={{ width: "100%" }} />
+                    </Form.Item>
+
+                    <Form.Item
+                        label={<span style={{ fontWeight: 600 }}>Capacidad (ml)</span>}
+                        name="capacidadML"
+                        rules={[{ required: true, message: "Ingrese la capacidad" }]}
+                    >
+                        <InputNumber min={0} style={{ width: "100%" }} />
+                    </Form.Item>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                    <Form.Item
                         label={<span style={{ fontWeight: 600 }}>Stock</span>}
                         name="stock"
                         rules={[{ required: true, message: "Ingrese el stock" }]}
@@ -114,9 +159,8 @@ export default function ProductoModal({
                     <Form.Item
                         label={<span style={{ fontWeight: 600 }}>Vencimiento</span>}
                         name="fechaVencimiento"
-                        rules={[{ required: true, message: "Seleccione la fecha" }]}
                     >
-                        <DatePicker style={{ width: "100%" }} />
+                        <DatePicker style={{ width: "100%" }} placeholder="Opcional" />
                     </Form.Item>
                 </div>
 

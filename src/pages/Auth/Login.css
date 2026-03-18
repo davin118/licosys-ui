@@ -5,6 +5,7 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    padding: 24px;
     overflow: hidden;
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0f172a 100%);
 }
@@ -95,4 +96,20 @@
 
 .mb-5 {
     margin-bottom: 1.25rem;
+}
+
+@media (max-width: 576px) {
+    .login-container {
+        padding: 16px;
+    }
+
+    .login-card {
+        width: 100% !important;
+        max-width: 420px;
+        padding: 18px;
+    }
+
+    .logo-animado {
+        width: 140px;
+    }
 }

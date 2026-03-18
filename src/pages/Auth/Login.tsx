@@ -3,7 +3,7 @@ import { Card, Input, Button, Typography, Form, message } from "antd";
 import { LockOutlined, UserOutlined, LoginOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
-import { saveToken } from "../../utils/auth";
+import { saveAuthSession } from "../../utils/auth";
 import "./Login.css"; // 🔹 Importamos el CSS animado
 import SplashScreen from "./SplashScreen";
 
@@ -20,9 +20,9 @@ export default function Login() {
     setLoading(true);
     try {
       const res = await api.post("/Auth/login", values);
-      saveToken(res.data.token);
+      saveAuthSession(res.data);
       message.success("Bienvenido a LicoSys 🍷");
-      navigate("/dashboard");
+      navigate(res.data.debeCambiarPassword ? "/perfil" : "/");
     } catch {
       message.error("Credenciales incorrectas o usuario inactivo");
     } finally {

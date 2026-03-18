@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Card, Avatar, Typography, Button, Form, Input, message, Modal } from "antd";
-import { UserOutlined, MailOutlined, CrownOutlined, LockOutlined } from "@ant-design/icons";
-import { getUserFromToken, clearToken } from "../../utils/auth";
+import { Card, Avatar, Typography, Button, Form, Input, message } from "antd";
+import { UserOutlined, MailOutlined, CrownOutlined } from "@ant-design/icons";
+import { clearToken, getUserFromToken } from "../../utils/auth";
 import api from "../../api/api";
 import { useNavigate } from "react-router-dom";
+import type { IUsuario } from "../../interfaces/IUsuario";
 
 const { Title, Text } = Typography;
 
@@ -11,30 +12,72 @@ export default function PerfilUsuario() {
     const [form] = Form.useForm();
     const navigate = useNavigate();
     const user = getUserFromToken();
+    const [profile, setProfile] = useState<IUsuario | null>(null);
     const [loading, setLoading] = useState(false);
-    const [showPasswordModal, setShowPasswordModal] = useState(false);
-    const [passwordForm] = Form.useForm();
 
     useEffect(() => {
-        if (user) {
-            form.setFieldsValue({
-                nombreCompleto: user.name,
-                email: user.email,
-                role: user.role,
-            });
+        let active = true;
+
+        async function cargarPerfil() {
+            try {
+                const res = await api.get("/Usuarios/me");
+                if (!active) {
+                    return;
+                }
+
+                const currentProfile: IUsuario = {
+                    id: res.data.id,
+                    email: res.data.email,
+                    userName: res.data.userName,
+                    rol: res.data.rol,
+                    activo: res.data.activo,
+                    debeCambiarPassword: res.data.debeCambiarPassword,
+                    nombreCompleto: res.data.nombreCompleto,
+                    cargo: res.data.cargo,
+                    fechaRegistro: res.data.fechaRegistro,
+                };
+
+                setProfile(currentProfile);
+                form.setFieldsValue({
+                    nombreCompleto: currentProfile.nombreCompleto,
+                    email: currentProfile.email,
+                    role: currentProfile.rol,
+                    cargo: currentProfile.cargo,
+                });
+            } catch {
+                if (active) {
+                    message.error("No se pudo cargar el perfil");
+                }
+            }
         }
+
+        if (user) {
+            cargarPerfil();
+        }
+
+        return () => {
+            active = false;
+        };
     }, [user, form]);
 
-    // ✅ Actualizar perfil
-    const actualizarPerfil = async (values: any) => {
+    const actualizarPerfil = async (values: {
+        email: string;
+        nombreCompleto?: string;
+        cargo?: string;
+    }) => {
         try {
             setLoading(true);
-            await api.put(`/Usuarios/${user?.id}/actualizar`, {
+            await api.put(`/Usuarios/${profile?.id ?? user?.id}/actualizar`, {
                 email: values.email,
                 nombreCompleto: values.nombreCompleto,
                 cargo: values.cargo,
             });
-            message.success("Perfil actualizado correctamente 🎉");
+            setProfile((current) => current ? {
+                ...current,
+                nombreCompleto: values.nombreCompleto,
+                cargo: values.cargo,
+            } : current);
+            message.success("Perfil actualizado correctamente");
         } catch {
             message.error("No se pudo actualizar el perfil");
         } finally {
@@ -42,22 +85,6 @@ export default function PerfilUsuario() {
         }
     };
 
-    // 🔐 Cambiar contraseña
-    const cambiarPassword = async (values: any) => {
-        try {
-            setLoading(true);
-            await api.post("/Auth/cambiar-password", values);
-            message.success("Contraseña actualizada correctamente 🔒");
-            setShowPasswordModal(false);
-            passwordForm.resetFields();
-        } catch {
-            message.error("No se pudo cambiar la contraseña");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // 🚪 Cerrar sesión
     const cerrarSesion = () => {
         clearToken();
         navigate("/login");
@@ -79,10 +106,10 @@ export default function PerfilUsuario() {
                         style={{ backgroundColor: "#1677ff", marginBottom: 10 }}
                     />
                     <Title level={4} style={{ marginBottom: 0, color: "#1677ff" }}>
-                        {user?.name || "Usuario"}
+                        {profile?.nombreCompleto || user?.name || "Usuario"}
                     </Title>
                     <Text type="secondary">
-                        <CrownOutlined /> {user?.role || "Invitado"}
+                        <CrownOutlined /> {profile?.rol || user?.role || "Invitado"}
                     </Text>
                 </div>
 
@@ -99,6 +126,10 @@ export default function PerfilUsuario() {
                         <Input prefix={<CrownOutlined />} disabled />
                     </Form.Item>
 
+                    <Form.Item label="Cargo" name="cargo">
+                        <Input prefix={<CrownOutlined />} placeholder="Tu cargo o puesto" />
+                    </Form.Item>
+
                     <div className="flex justify-between mt-6">
                         <Button type="primary" htmlType="submit" loading={loading}>
                             Guardar cambios
@@ -108,46 +139,7 @@ export default function PerfilUsuario() {
                         </Button>
                     </div>
                 </Form>
-
-                <div className="mt-4 text-center">
-                    <Button icon={<LockOutlined />} onClick={() => setShowPasswordModal(true)}>
-                        Cambiar contraseña
-                    </Button>
-                </div>
             </Card>
-
-            {/* Modal de cambio de contraseña */}
-            <Modal
-                title="Cambiar contraseña"
-                open={showPasswordModal}
-                onCancel={() => setShowPasswordModal(false)}
-                onOk={() => passwordForm.submit()}
-                okText="Guardar"
-                cancelText="Cancelar"
-                confirmLoading={loading}
-            >
-                <Form layout="vertical" form={passwordForm} onFinish={cambiarPassword}>
-                    <Form.Item label="Correo electrónico" name="email" initialValue={user?.email}>
-                        <Input disabled />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Contraseña actual"
-                        name="contraseñaActual"
-                        rules={[{ required: true }]}
-                    >
-                        <Input.Password placeholder="********" />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Nueva contraseña"
-                        name="nuevaContraseña"
-                        rules={[{ required: true, min: 6 }]}
-                    >
-                        <Input.Password placeholder="********" />
-                    </Form.Item>
-                </Form>
-            </Modal>
         </div>
     );
 }

@@ -1,8 +1,193 @@
 @import "tailwindcss";
 
-/* Estilos base opcionales */
+:root {
+  --bg-base: #f3f8ff;
+  --bg-accent: #eef6ff;
+  --surface: rgba(255, 255, 255, 0.88);
+  --surface-strong: #ffffff;
+  --surface-dark: #10223d;
+  --brand: #1d4ed8;
+  --brand-strong: #163ea8;
+  --brand-soft: #dbeafe;
+  --accent: #0ea5e9;
+  --accent-soft: #d9f2ff;
+  --text-main: #10223d;
+  --text-muted: #5b6b86;
+  --border-soft: rgba(59, 91, 148, 0.14);
+  --shadow-soft: 0 18px 40px rgba(29, 78, 216, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
 body {
-  background-color: #f9fafb;
-  color: #1f2937;
-  font-family: 'Inter', sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(29, 78, 216, 0.1), transparent 28%),
+    radial-gradient(circle at top right, rgba(14, 165, 233, 0.12), transparent 24%),
+    linear-gradient(180deg, #fdfefe 0%, var(--bg-base) 100%);
+  color: var(--text-main);
+  font-family: "Inter", sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.page-shell {
+  width: 100%;
+}
+
+.app-content-shell {
+  background: linear-gradient(180deg, rgba(255, 250, 244, 0.95), rgba(255, 255, 255, 0.9));
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+.page-hero {
+  margin-bottom: 20px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg, rgba(22, 62, 168, 0.96), rgba(29, 78, 216, 0.92) 52%, rgba(14, 165, 233, 0.88));
+  color: #f4f9ff;
+  box-shadow: 0 20px 40px rgba(29, 78, 216, 0.2);
+}
+
+.page-hero h1,
+.page-hero h2,
+.page-hero h3,
+.page-hero p {
+  margin: 0;
+  color: inherit;
+}
+
+.hero-kicker {
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.page-subtle {
+  color: rgba(244, 249, 255, 0.82);
+}
+
+.panel-soft {
+  border: 1px solid var(--border-soft);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(8px);
+}
+
+.report-overview-card {
+  height: 100%;
+  border: 1px solid rgba(59, 91, 148, 0.12);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(238, 246, 255, 0.9));
+  box-shadow: 0 16px 32px rgba(29, 78, 216, 0.08);
+}
+
+.toolbar-soft {
+  margin-bottom: 16px;
+  padding: 14px;
+  border: 1px solid var(--border-soft);
+  border-radius: 18px;
+  background: rgba(248, 251, 255, 0.9);
+}
+
+.metric-card {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(243, 248, 255, 0.92));
+  box-shadow: var(--shadow-soft);
+}
+
+.metric-card::before {
+  content: "";
+  display: block;
+  height: 4px;
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+}
+
+.metric-card .metric-label {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  color: var(--brand-strong);
+}
+
+.section-heading::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--brand), var(--accent));
+  box-shadow: 0 0 0 6px rgba(29, 78, 216, 0.08);
+}
+
+.brand-button {
+  background: linear-gradient(135deg, var(--brand), var(--brand-strong)) !important;
+  border-color: transparent !important;
+}
+
+.brand-button:hover {
+  background: linear-gradient(135deg, #2563eb, #1e40af) !important;
+}
+
+.warm-button {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
+  border-color: transparent !important;
+  color: #eff8ff !important;
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.filters-wrap > * {
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .page-shell {
+    padding: 0;
+  }
+
+  .page-hero {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .filters-wrap {
+    width: 100%;
+  }
+
+  .filters-wrap > * {
+    width: 100%;
+  }
 }

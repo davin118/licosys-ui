@@ -15,9 +15,10 @@ import {
 import {
     PlusOutlined,
     EditOutlined,
-    DeleteOutlined,
     KeyOutlined,
     CopyOutlined,
+    StopOutlined,
+    CheckCircleOutlined,
 } from "@ant-design/icons";
 import api from "../../api/api";
 import type { IUsuario } from "../../interfaces/IUsuario";
@@ -28,6 +29,7 @@ export default function Usuarios() {
     const [usuarios, setUsuarios] = useState<IUsuario[]>([]);
     const [visible, setVisible] = useState(false);
     const [editingUser, setEditingUser] = useState<IUsuario | null>(null);
+    const [selectedUserForReset, setSelectedUserForReset] = useState<IUsuario | null>(null);
     const [loading, setLoading] = useState(false);
     const [form] = Form.useForm<IUsuario>();
     const [modalPassword, setModalPassword] = useState(false);
@@ -87,27 +89,42 @@ export default function Usuarios() {
         }
     };
 
-    // 🔹 Eliminar usuario
-    const eliminarUsuario = async (id: string) => {
+    // 🔹 Activar / desactivar usuario
+    const cambiarEstadoUsuario = async (usuario: IUsuario) => {
         try {
-            await api.delete(`/Usuarios/${id}`);
-            message.success("Usuario eliminado correctamente");
+            await api.put(`/Usuarios/${usuario.id}/activar`);
+            message.success(usuario.activo ? "Usuario desactivado correctamente" : "Usuario activado correctamente");
             cargarUsuarios();
         } catch {
-            message.error("Error al eliminar usuario");
+            message.error("Error al actualizar el estado del usuario");
         }
     };
 
-    // 🔹 Cambiar contraseña de usuario
-    const cambiarPassword = async (values: any) => {
+    // 🔹 Restablecer contraseña de usuario y generar temporal
+    const restablecerPassword = async () => {
         try {
             setLoading(true);
-            await api.post("/Auth/cambiar-password", values);
-            message.success("Contraseña actualizada correctamente 🔒");
+            if (!selectedUserForReset?.id) {
+                message.error("Selecciona un usuario válido para restablecer la contraseña");
+                return;
+            }
+
+            const values = await passwordForm.validateFields();
+            const res = await api.put(
+                `/Usuarios/${selectedUserForReset.id}/restablecer-contraseña`,
+                {
+                    nuevaContraseña: values.nuevaContraseña?.trim() || undefined,
+                }
+            );
+
+            setPasswordTemporal(res.data.nuevaContraseña);
+            setShowPasswordModal(true);
             setModalPassword(false);
             passwordForm.resetFields();
+            setSelectedUserForReset(null);
+            message.success("Contraseña restablecida correctamente");
         } catch {
-            message.error("No se pudo cambiar la contraseña");
+            message.error("No se pudo restablecer la contraseña");
         } finally {
             setLoading(false);
         }
@@ -177,18 +194,32 @@ export default function Usuarios() {
 
                                 <Button
                                     icon={<KeyOutlined />}
-                                    onClick={() => setModalPassword(true)}
+                                    onClick={() => {
+                                        setSelectedUserForReset(record);
+                                        passwordForm.resetFields();
+                                        setModalPassword(true);
+                                    }}
                                 >
-                                    Cambiar contraseña
+                                    Reset clave
                                 </Button>
 
                                 <Popconfirm
-                                    title="¿Eliminar usuario?"
-                                    okText="Sí"
-                                    cancelText="No"
-                                    onConfirm={() => eliminarUsuario(record.id!)}
+                                    title={record.activo ? "¿Desactivar usuario?" : "¿Activar usuario?"}
+                                    description={
+                                        record.activo
+                                            ? "El usuario ya no podrá iniciar sesión hasta ser activado nuevamente."
+                                            : "El usuario podrá volver a ingresar al sistema."
+                                    }
+                                    okText={record.activo ? "Desactivar" : "Activar"}
+                                    cancelText="Cancelar"
+                                    onConfirm={() => cambiarEstadoUsuario(record)}
                                 >
-                                    <Button danger icon={<DeleteOutlined />} />
+                                    <Button
+                                        danger={record.activo}
+                                        icon={record.activo ? <StopOutlined /> : <CheckCircleOutlined />}
+                                    >
+                                        {record.activo ? "Desactivar" : "Activar"}
+                                    </Button>
                                 </Popconfirm>
                             </Space>
                         ),
@@ -210,7 +241,7 @@ export default function Usuarios() {
                         label="Correo electrónico"
                         rules={[{ required: true, type: "email" }]}
                     >
-                        <Input placeholder="ejemplo@pharmasys.com" />
+                        <Input placeholder="ejemplo@licosys.com" />
                     </Form.Item>
 
                     {!editingUser && (
@@ -220,11 +251,12 @@ export default function Usuarios() {
                     )}
 
                     <Form.Item name="rol" label="Rol" rules={[{ required: true }]}>
-                        <Select placeholder="Seleccione un rol">
-                            <Select.Option value="Administrador">Administrador</Select.Option>
-                            <Select.Option value="Vendedor">Vendedor</Select.Option>
-                        </Select>
-                    </Form.Item>
+                    <Select placeholder="Seleccione un rol">
+                        <Select.Option value="Administrador">Administrador</Select.Option>
+                        <Select.Option value="Vendedor">Vendedor</Select.Option>
+                        <Select.Option value="Consulta">Consulta</Select.Option>
+                    </Select>
+                </Form.Item>
 
                     <Form.Item name="nombreCompleto" label="Nombre completo">
                         <Input placeholder="Ej: Juan Pérez" />
@@ -236,46 +268,37 @@ export default function Usuarios() {
                 </Form>
             </Modal>
 
-            {/* 🔐 Modal para cambiar contraseña */}
+            {/* 🔐 Modal para restablecer contraseña */}
             <Modal
-                title="Cambiar contraseña"
+                title="Restablecer contraseña"
                 open={modalPassword}
-                onCancel={() => setModalPassword(false)}
-                onOk={() => passwordForm.submit()}
-                okText="Guardar"
+                onCancel={() => {
+                    setModalPassword(false);
+                    setSelectedUserForReset(null);
+                }}
+                onOk={restablecerPassword}
+                okText="Restablecer"
                 cancelText="Cancelar"
                 confirmLoading={loading}
             >
-                <Form layout="vertical" form={passwordForm} onFinish={cambiarPassword}>
-                    <Form.Item
-                        label="Correo del usuario"
-                        name="email"
-                        rules={[{ required: true, type: "email" }]}
-                    >
-                        <Input placeholder="usuario@pharmasys.com" />
+                <Form layout="vertical" form={passwordForm}>
+                    <Form.Item label="Usuario">
+                        <Input value={selectedUserForReset?.email} disabled />
                     </Form.Item>
-
                     <Form.Item
-                        label="Contraseña actual"
-                        name="contraseñaActual"
-                        rules={[{ required: true }]}
-                    >
-                        <Input.Password placeholder="********" />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Nueva contraseña"
+                        label="Contraseña temporal"
                         name="nuevaContraseña"
-                        rules={[{ required: true, min: 6 }]}
+                        extra="Déjala vacía para que el sistema genere una automáticamente."
+                        rules={[{ min: 6, message: "La contraseña debe tener al menos 6 caracteres." }]}
                     >
-                        <Input.Password placeholder="********" />
+                        <Input.Password placeholder="Temporal opcional" />
                     </Form.Item>
                 </Form>
             </Modal>
 
             {/* 🔑 Modal de contraseña temporal */}
             <Modal
-                title="Usuario creado correctamente 🎉"
+                title="Contraseña temporal"
                 open={showPasswordModal}
                 onCancel={() => setShowPasswordModal(false)}
                 footer={[
@@ -287,7 +310,7 @@ export default function Usuarios() {
                     </Button>,
                 ]}
             >
-                <p>Se ha creado el usuario exitosamente. Aquí está la contraseña temporal:</p>
+                <p>Aquí está la contraseña temporal generada para el usuario:</p>
                 <div
                     style={{
                         backgroundColor: "#f0f5ff",

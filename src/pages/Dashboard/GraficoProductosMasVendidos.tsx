@@ -1,54 +1,84 @@
-import { useEffect, useState } from "react";
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import api from "../../api/api";
-import { message } from "antd";
+import { useCallback } from "react";
+import { ResponsiveBar } from "@nivo/bar";
+import { Empty, Spin } from "antd";
+import { getProductosMasVendidosReporte } from "../../api/reportsApi";
+import { useReportLoader } from "../../hooks/useReportLoader";
+import type { ProductoMasVendidoReporteItem } from "../../interfaces/reportes";
+import { chartPalette, nivoTheme } from "../../utils/chartTheme";
 
-interface ProductoVenta {
-    producto: string;
-    cantidad: number;
+interface ProductoBarData {
+  producto: string;
+  ventas: number;
+  [key: string]: string | number;
 }
-
-const COLORS = ["#ffb703", "#fb8500", "#219ebc", "#8ecae6", "#023047"];
 
 export default function GraficoProductosMasVendidos() {
-    const [data, setData] = useState<ProductoVenta[]>([]);
+  const fetchProductos = useCallback(async () => {
+    const res = await getProductosMasVendidosReporte();
+    return res.data;
+  }, []);
 
-    useEffect(() => {
-        const cargar = async () => {
-            try {
-                const res = await api.get("/Ventas/resumen");
-                setData(res.data?.ProductosMasVendidos || []);
-            } catch {
-                message.error("Error al cargar productos más vendidos");
-            }
-        };
-        cargar();
-    }, []);
+  const { data: productos, loading } = useReportLoader<ProductoMasVendidoReporteItem>(fetchProductos);
 
-    // 🔹 Adaptamos los datos para Recharts
-    const chartData = data.map((d) => ({
-        name: d.producto,
-        value: d.cantidad
-    }));
+  const data: ProductoBarData[] = productos.map((item) => ({
+    producto: item.producto,
+    ventas: item.cantidadVendida,
+  }));
 
+  if (loading) {
     return (
-        <ResponsiveContainer width="100%" height={260}>
-            <PieChart>
-                <Pie
-                    data={chartData}
-                    dataKey="value"
-                    nameKey="name"
-                    outerRadius={100}
-                    label
-                >
-                    {chartData.map((_, index) => (
-                        <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-            </PieChart>
-        </ResponsiveContainer>
+      <div className="flex items-center justify-center" style={{ height: 300 }}>
+        <Spin />
+      </div>
     );
-}
+  }
 
+  if (data.length === 0) {
+    return (
+      <div className="flex items-center justify-center" style={{ height: 300 }}>
+        <Empty description="Sin datos para graficar" />
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ height: 300 }}>
+      <ResponsiveBar
+        data={data}
+        keys={["ventas"]}
+        indexBy="producto"
+        margin={{ top: 20, right: 20, bottom: 50, left: 60 }}
+        theme={nivoTheme}
+        padding={0.3}
+        colors={({ index }) => (
+          [
+            chartPalette.primary,
+            chartPalette.accent,
+            chartPalette.teal,
+            chartPalette.violet,
+            chartPalette.primarySoft,
+            chartPalette.accentSoft,
+          ][index % 6]
+        )}
+        borderRadius={8}
+        borderColor={{
+          from: "color",
+          modifiers: [["darker", 0.2]],
+        }}
+        labelTextColor="#eff6ff"
+        axisBottom={{
+          legend: "Producto",
+          legendOffset: 32,
+          tickSize: 0,
+          tickPadding: 10,
+        }}
+        axisLeft={{
+          legend: "Ventas",
+          legendOffset: -40,
+          tickSize: 0,
+          tickPadding: 10,
+        }}
+      />
+    </div>
+  );
+}
