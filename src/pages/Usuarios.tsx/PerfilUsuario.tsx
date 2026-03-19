@@ -94,7 +94,8 @@ export default function PerfilUsuario() {
         <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-100 to-blue-200 p-6">
             <Card
                 style={{
-                    width: 450,
+                    width: "100%",
+                    maxWidth: 450,
                     borderRadius: 16,
                     boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
                 }}
@@ -130,11 +131,11 @@ export default function PerfilUsuario() {
                         <Input prefix={<CrownOutlined />} placeholder="Tu cargo o puesto" />
                     </Form.Item>
 
-                    <div className="flex justify-between mt-6">
-                        <Button type="primary" htmlType="submit" loading={loading}>
+                    <div className="flex justify-between mt-6 gap-3 flex-wrap">
+                        <Button type="primary" htmlType="submit" loading={loading} style={{ flex: 1 }}>
                             Guardar cambios
                         </Button>
-                        <Button danger onClick={cerrarSesion}>
+                        <Button danger onClick={cerrarSesion} style={{ flex: 1 }}>
                             Cerrar sesión
                         </Button>
                     </div>

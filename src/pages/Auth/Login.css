@@ -33,7 +33,7 @@
 
 /* 💎 Tarjeta */
 .login-card {
-    width: 420px !important;
+    width: min(420px, 100%) !important;
     padding: 25px;
     border-radius: 18px;
     background: rgba(30, 41, 59, 0.85);
@@ -111,5 +111,15 @@
 
     .logo-animado {
         width: 140px;
+    }
+}
+
+@media (max-width: 360px) {
+    .login-card {
+        padding: 14px;
+    }
+
+    .logo-animado {
+        width: 120px;
     }
 }

@@ -44,7 +44,8 @@ export default function ForceChangePassword() {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 via-blue-50 to-cyan-100 p-6">
             <Card
                 style={{
-                    width: 460,
+                    width: "100%",
+                    maxWidth: 460,
                     borderRadius: 20,
                     boxShadow: "0 18px 45px rgba(15, 23, 42, 0.12)",
                 }}

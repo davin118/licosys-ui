@@ -222,7 +222,7 @@ export default function MainLayout() {
                         </h3>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 min-w-0">
                         {/* 🔔 Notificaciones */}
                         {canUseNotifications ? (
                             <Dropdown
@@ -233,7 +233,13 @@ export default function MainLayout() {
                                     }
                                 }}
                                 dropdownRender={() => (
-                                    <div style={{ padding: 12, width: 340 }}>
+                                    <div
+                                        style={{
+                                            padding: 12,
+                                            width: isMobile ? "calc(100vw - 24px)" : 340,
+                                            maxWidth: "100%",
+                                        }}
+                                    >
                                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
                                             <Space>
                                                 <Text strong>Notificaciones</Text>

@@ -26,6 +26,7 @@ body,
 #root {
   margin: 0;
   min-height: 100%;
+  width: 100%;
 }
 
 body {
@@ -173,6 +174,31 @@ img {
   min-width: 0;
 }
 
+.ant-table-wrapper {
+  width: 100%;
+}
+
+.ant-table-wrapper .ant-table-cell {
+  word-break: break-word;
+}
+
+.ant-modal {
+  max-width: calc(100vw - 24px);
+}
+
+.ant-modal .ant-modal-content {
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
+.ant-picker,
+.ant-picker-range,
+.ant-select,
+.ant-input,
+.ant-input-number {
+  max-width: 100%;
+}
+
 @media (max-width: 768px) {
   .page-shell {
     padding: 0;
@@ -189,5 +215,13 @@ img {
 
   .filters-wrap > * {
     width: 100%;
+  }
+
+  .ant-card .ant-card-head-title {
+    white-space: normal;
+  }
+
+  .ant-table-wrapper .ant-table {
+    font-size: 12px;
   }
 }
