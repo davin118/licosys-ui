@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="920" viewBox="0 0 1500 920">
+  <style>
+    .title { font: 700 24px 'Times New Roman', serif; fill: #111; }
+    .label { font: 600 16px 'Times New Roman', serif; fill: #111; }
+    .small { font: 500 14px 'Times New Roman', serif; fill: #111; }
+    .box { fill: #fff; stroke: #222; stroke-width: 2; rx: 8; ry: 8; }
+    .line { stroke: #222; stroke-width: 2; fill: none; }
+  </style>
+
+  <rect class="box" x="560" y="20" width="380" height="60"/>
+  <text class="title" x="750" y="58" text-anchor="middle">Rol: Administrador</text>
+
+  <path class="line" d="M750 80 L750 120" />
+  <path class="line" d="M100 120 L1300 120" />
+  <path class="line" d="M100 120 L100 160" />
+  <path class="line" d="M250 120 L250 160" />
+  <path class="line" d="M400 120 L400 160" />
+  <path class="line" d="M550 120 L550 160" />
+  <path class="line" d="M700 120 L700 160" />
+  <path class="line" d="M850 120 L850 160" />
+  <path class="line" d="M1000 120 L1000 160" />
+  <path class="line" d="M1150 120 L1150 160" />
+  <path class="line" d="M1300 120 L1300 160" />
+
+  <rect class="box" x="40" y="160" width="120" height="50"/>
+  <text class="label" x="100" y="191" text-anchor="middle">Dashboard</text>
+
+  <rect class="box" x="190" y="160" width="120" height="50"/>
+  <text class="label" x="250" y="191" text-anchor="middle">Usuarios</text>
+
+  <rect class="box" x="340" y="160" width="120" height="50"/>
+  <text class="label" x="400" y="191" text-anchor="middle">Productos</text>
+
+  <rect class="box" x="490" y="160" width="120" height="50"/>
+  <text class="label" x="550" y="191" text-anchor="middle">Categorias</text>
+
+  <rect class="box" x="640" y="160" width="120" height="50"/>
+  <text class="label" x="700" y="191" text-anchor="middle">Proveedores</text>
+
+  <rect class="box" x="790" y="160" width="120" height="50"/>
+  <text class="label" x="850" y="191" text-anchor="middle">Clientes</text>
+
+  <rect class="box" x="940" y="160" width="120" height="50"/>
+  <text class="label" x="1000" y="191" text-anchor="middle">Compras</text>
+
+  <rect class="box" x="1090" y="160" width="120" height="50"/>
+  <text class="label" x="1150" y="191" text-anchor="middle">Ventas</text>
+
+  <rect class="box" x="1240" y="160" width="120" height="50"/>
+  <text class="label" x="1300" y="191" text-anchor="middle">Reportes</text>
+
+  <rect class="box" x="380" y="270" width="150" height="46"/>
+  <text class="small" x="455" y="299" text-anchor="middle">Crear usuarios</text>
+  <rect class="box" x="380" y="330" width="150" height="46"/>
+  <text class="small" x="455" y="359" text-anchor="middle">Editar usuarios</text>
+  <rect class="box" x="380" y="390" width="150" height="46"/>
+  <text class="small" x="455" y="419" text-anchor="middle">Asignar roles</text>
+  <rect class="box" x="380" y="450" width="150" height="46"/>
+  <text class="small" x="455" y="479" text-anchor="middle">Activar / desactivar</text>
+  <path class="line" d="M250 210 L250 472" />
+  <path class="line" d="M250 292 L380 292" />
+  <path class="line" d="M250 352 L380 352" />
+  <path class="line" d="M250 412 L380 412" />
+  <path class="line" d="M250 472 L380 472" />
+
+  <rect class="box" x="560" y="270" width="170" height="46"/>
+  <text class="small" x="645" y="299" text-anchor="middle">Registrar productos</text>
+  <rect class="box" x="560" y="330" width="170" height="46"/>
+  <text class="small" x="645" y="359" text-anchor="middle">Editar productos</text>
+  <rect class="box" x="560" y="390" width="170" height="46"/>
+  <text class="small" x="645" y="419" text-anchor="middle">Eliminar productos</text>
+  <rect class="box" x="560" y="450" width="170" height="46"/>
+  <text class="small" x="645" y="479" text-anchor="middle">Control de stock</text>
+  <path class="line" d="M400 210 L400 472" />
+  <path class="line" d="M400 292 L560 292" />
+  <path class="line" d="M400 352 L560 352" />
+  <path class="line" d="M400 412 L560 412" />
+  <path class="line" d="M400 472 L560 472" />
+
+  <rect class="box" x="760" y="280" width="150" height="46"/>
+  <text class="small" x="835" y="309" text-anchor="middle">Registrar compras</text>
+  <rect class="box" x="760" y="340" width="150" height="46"/>
+  <text class="small" x="835" y="369" text-anchor="middle">Actualizar inventario</text>
+  <path class="line" d="M1000 210 L1000 363" />
+  <path class="line" d="M910 303 L1000 303" />
+  <path class="line" d="M910 363 L1000 363" />
+
+  <rect class="box" x="960" y="280" width="150" height="46"/>
+  <text class="small" x="1035" y="309" text-anchor="middle">Registrar ventas</text>
+  <rect class="box" x="960" y="340" width="150" height="46"/>
+  <text class="small" x="1035" y="369" text-anchor="middle">Consultar historial</text>
+  <path class="line" d="M1150 210 L1150 363" />
+  <path class="line" d="M1110 303 L1150 303" />
+  <path class="line" d="M1110 363 L1150 363" />
+
+  <rect class="box" x="1180" y="260" width="220" height="44"/>
+  <text class="small" x="1290" y="288" text-anchor="middle">Inventario</text>
+  <rect class="box" x="1180" y="316" width="220" height="44"/>
+  <text class="small" x="1290" y="344" text-anchor="middle">Bajo stock</text>
+  <rect class="box" x="1180" y="372" width="220" height="44"/>
+  <text class="small" x="1290" y="400" text-anchor="middle">Productos por vencer</text>
+  <rect class="box" x="1180" y="428" width="220" height="44"/>
+  <text class="small" x="1290" y="456" text-anchor="middle">Ventas por fecha</text>
+  <rect class="box" x="1180" y="484" width="220" height="44"/>
+  <text class="small" x="1290" y="512" text-anchor="middle">Ventas por metodo</text>
+  <rect class="box" x="1180" y="540" width="220" height="44"/>
+  <text class="small" x="1290" y="568" text-anchor="middle">Ventas por usuario</text>
+  <rect class="box" x="1180" y="596" width="220" height="44"/>
+  <text class="small" x="1290" y="624" text-anchor="middle">Productos mas vendidos</text>
+  <path class="line" d="M1150 210 L1150 618" />
+  <path class="line" d="M1150 282 L1180 282" />
+  <path class="line" d="M1150 338 L1180 338" />
+  <path class="line" d="M1150 394 L1180 394" />
+  <path class="line" d="M1150 450 L1180 450" />
+  <path class="line" d="M1150 506 L1180 506" />
+  <path class="line" d="M1150 562 L1180 562" />
+  <path class="line" d="M1150 618 L1180 618" />
+
+  <rect class="box" x="580" y="620" width="150" height="50"/>
+  <text class="label" x="655" y="651" text-anchor="middle">Backup</text>
+  <rect class="box" x="780" y="620" width="240" height="50"/>
+  <text class="label" x="900" y="651" text-anchor="middle">Perfil / Cambio de clave</text>
+  <path class="line" d="M655 120 L655 620" />
+  <path class="line" d="M900 120 L900 620" />
+
+  <rect class="box" x="420" y="730" width="220" height="46"/>
+  <text class="small" x="530" y="759" text-anchor="middle">Generar respaldo</text>
+  <rect class="box" x="660" y="730" width="260" height="46"/>
+  <text class="small" x="790" y="759" text-anchor="middle">Gestionar copias de seguridad</text>
+  <path class="line" d="M655 670 L655 753" />
+  <path class="line" d="M640 753 L655 753" />
+  <path class="line" d="M655 753 L660 753" />
+</svg>
